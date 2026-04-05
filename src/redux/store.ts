@@ -12,19 +12,23 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 
 import userReducer from "./features/userSlice";
 import { authApi } from "./apis/authApi";
+import { pagepalApi } from "./apis/pagepalApi";
 
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 
 /* REDUX PERSISTENCE */
 const createNoopStorage = () => {
   return {
-    getItem(_key: any) {
+    getItem(key: string) {
+      void key;
       return Promise.resolve(null);
     },
-    setItem(_key: any, value: any) {
+    setItem(key: string, value: string) {
+      void key;
       return Promise.resolve(value);
     },
-    removeItem(_key: any) {
+    removeItem(key: string) {
+      void key;
       return Promise.resolve();
     },
   };
@@ -44,6 +48,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   user: userReducer,
   [authApi.reducerPath]: authApi.reducer,
+  [pagepalApi.reducerPath]: pagepalApi.reducer,
   //   [habitApi.reducerPath]: habitApi.reducer,
   //   [toastApi.reducerPath]: toastApi.reducer,
 });
@@ -57,7 +62,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
       },
-    }).concat(authApi.middleware),
+    }).concat(authApi.middleware, pagepalApi.middleware),
 });
 
 export const persistor = persistStore(store);
@@ -65,3 +70,4 @@ export const persistor = persistStore(store);
 setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

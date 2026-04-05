@@ -28,7 +28,7 @@ export interface DesktopThemeGridProps {
 export interface MobileThemeNavigationProps {
   currentIndex: number;
   themeCount: number;
-  themeArray: any[];
+  themeArray: Theme[];
   handleNext: () => void;
   handlePrevious: () => void;
 }

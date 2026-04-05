@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BaseUser } from "@/types/user";
 import { login, logout } from "@/redux/features/userSlice";
+import type { RootState } from "@/redux/store";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 if(!backendUrl) {
@@ -12,7 +13,7 @@ export const authApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: backendUrl,
     prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as any).user.accessToken;
+      const token = (getState() as RootState).user.accessToken;
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
@@ -68,14 +69,14 @@ export const authApi = createApi({
 
     register: builder.mutation<
       { message: string },
-      { email: string; password: string; username: string }
+      { email: string; password: string; username: string; name?: string }
     >({
       query: (data) => ({
         url: "/auth/register",
         method: "POST",
         body: data,
       }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+      async onQueryStarted(arg, { queryFulfilled }) {
         try {
           await queryFulfilled;
           // Show a success toast or redirect to login page

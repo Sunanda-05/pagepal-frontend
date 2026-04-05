@@ -1,9 +1,5 @@
-import React from 'react'
+import { HomeScreen } from "@/features/pagepal/screens/HomeScreen";
 
-const HomePage = () => {
-  return (
-    <div>HomePage</div>
-  )
+export default function HomePage() {
+  return <HomeScreen />;
 }
-
-export default HomePage

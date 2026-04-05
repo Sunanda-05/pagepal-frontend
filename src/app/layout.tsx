@@ -1,26 +1,27 @@
 import type { Metadata } from "next";
-import { Poppins, EB_Garamond } from "next/font/google";
+import { Lora, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import { cookies } from "next/headers";
 
-const poppins = Poppins({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-poppins",
+  variable: "--font-ui",
   display: "swap",
 });
 
-const eb_garamond = EB_Garamond({
+const lora = Lora({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-eb-garamond",
+  variable: "--font-display",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "PagePal",
-  description: "Rate, review Books and discover each other's interests.",
+  description:
+    "A social place for discovering, reviewing, and sharing books with your people.",
 };
 
 export default async function RootLayout({
@@ -29,12 +30,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
-  const mode = cookieStore.get("mode")?.value || "light";
-  console.log(mode);
+  const mode = cookieStore.get("mode")?.value || "theme-warm-light";
+
   return (
     <html lang="en">
       <body
-        className={`${poppins.variable} ${eb_garamond.variable} ${mode} antialiased`}
+        className={`${plusJakartaSans.variable} ${lora.variable} ${mode} antialiased`}
       >
         <Providers>{children}</Providers>
       </body>

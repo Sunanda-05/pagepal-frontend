@@ -13,15 +13,19 @@ import StepTwo from "@/components/sections/register/steps/StepTwo";
 import StepThree from "@/components/sections/register/steps/StepThree";
 import SuccessMessage from "@/components/sections/register/SuccessMessage";
 import { useIsMobile } from "@/hooks/useResponsive";
+import { useRegisterMutation } from "@/redux/apis/authApi";
 
 const MultiStepSignupForm: React.FC = () => {
   const { currentStep, direction, nextStep, prevStep, goToStep, form } =
     useMultiStepForm();
+    const [register, { isSuccess }] = useRegisterMutation()
   const [isCompleted, setIsCompleted] = useState(true);
 
   const isMobile = useIsMobile();
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
+    await register(form.getValues());
+    if(isSuccess)
     setIsCompleted(true);
   };
 

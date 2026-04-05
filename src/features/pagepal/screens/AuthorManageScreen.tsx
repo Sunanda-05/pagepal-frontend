@@ -1,0 +1,1 @@
+export { AuthorManageScreen } from "./PagePalScreens";

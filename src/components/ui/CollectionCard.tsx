@@ -1,0 +1,69 @@
+import React from "react";
+import Link from "next/link";
+import { Collection, Book } from "@/types/pagepal";
+import UserAvatar from "@/components/ui/UserAvatar";
+import BookCover from "@/components/ui/BookCover";
+
+interface CollectionCardProps {
+  collection: Collection;
+  books?: Book[];
+}
+
+function visibilityLabel(value: Collection["visibility"]): string {
+  if (value === "public") return "Public";
+  if (value === "shared") return "Shared";
+  return "Private";
+}
+
+function visibilityClass(value: Collection["visibility"]): string {
+  if (value === "public") return "bg-[var(--color-primary-subtle)] text-[var(--color-primary-text)]";
+  if (value === "shared") return "bg-[var(--color-accent-subtle)] text-[var(--color-accent-text)]";
+  return "border border-border bg-surface text-text-muted";
+}
+
+export default function CollectionCard({ collection, books }: CollectionCardProps) {
+  const sourceBooks = books?.length ? books : [];
+  const visibleCovers = sourceBooks.slice(0, 4);
+  const placeholders = Math.max(0, 4 - visibleCovers.length);
+
+  return (
+    <Link
+      href={`/collections/${collection.id}`}
+      className="block rounded-xl border border-border bg-surface p-3 transition-all duration-200 hover:border-primary/45"
+    >
+      <div className="relative overflow-hidden rounded-xl border border-border bg-surface-secondary p-2">
+        <div className="grid grid-cols-2 gap-2">
+          {visibleCovers.map((book) => (
+            <BookCover key={`${collection.id}-${book.id}`} title={book.title} seed={book.id} size="xs" className="h-full w-full" hideTitle />
+          ))}
+          {Array.from({ length: placeholders }).map((_, index) => (
+            <div
+              key={`placeholder-${index}`}
+              className="aspect-[40/55] rounded-md border border-dashed border-border bg-primary/10"
+            />
+          ))}
+          {visibleCovers.length === 0 ? (
+            <div className="col-span-2 flex aspect-square items-center justify-center rounded-lg border border-dashed border-border">
+              <div className="empty-shape scale-75" />
+            </div>
+          ) : null}
+        </div>
+        <span className={`absolute bottom-2 right-2 rounded-full px-2 py-0.5 text-[10px] ${visibilityClass(collection.visibility)}`}>
+          {visibilityLabel(collection.visibility)}
+        </span>
+      </div>
+
+      <h3 className="serif-display mt-3 line-clamp-2 text-[15px] text-text">{collection.name}</h3>
+
+      <div className="mt-2 flex items-center gap-2">
+        <UserAvatar name={collection.ownerName} size="xs" />
+        <span className="truncate text-xs text-text-muted">{collection.ownerName}</span>
+      </div>
+
+      <div className="mt-2 flex items-center justify-between text-xs">
+        <span className="mono-meta">{collection.books.length} books</span>
+        <span className="text-text-muted">by {collection.ownerName}</span>
+      </div>
+    </Link>
+  );
+}

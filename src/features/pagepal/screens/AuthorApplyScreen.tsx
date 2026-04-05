@@ -1,0 +1,1 @@
+export { AuthorApplyScreen } from "./PagePalScreens";

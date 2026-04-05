@@ -1,0 +1,1 @@
+export { AdminApplicationDetailScreen } from "./PagePalScreens";

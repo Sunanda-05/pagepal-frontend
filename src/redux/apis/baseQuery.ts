@@ -23,8 +23,8 @@ const rawBaseQuery = fetchBaseQuery({
 });
 
 async function attemptTokenRefresh(
-  api: any,
-  extraOptions: any
+  api: Parameters<typeof rawBaseQuery>[1],
+  extraOptions: Parameters<typeof rawBaseQuery>[2]
 ): Promise<string | null> {
   try {
     const refreshResponse = await rawBaseQuery(

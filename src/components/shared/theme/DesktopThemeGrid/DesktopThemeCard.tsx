@@ -41,7 +41,6 @@ const ThemeCard = ({
         className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
         style={{
           background: "transparent",
-          ["--tw-ring-color" as any]: "var(--color-primary)",
         }}
       />
 

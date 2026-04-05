@@ -4,6 +4,7 @@ import {
   BackendBook,
   BackendUser,
   CursorResponse,
+  PaginatedResponse,
   mapBook,
   mapUser,
   toCursorResponse,
@@ -12,6 +13,13 @@ import {
 export interface FollowMutationBody {
   userId: string;
   type: "user" | "author";
+}
+
+export interface FollowListQueryParams {
+  userId: string;
+  page?: number;
+  limit?: number;
+  search?: string;
 }
 
 export const pagepalUserApi = pagepalApi.injectEndpoints({
@@ -53,7 +61,7 @@ export const pagepalUserApi = pagepalApi.injectEndpoints({
         method: "POST",
         params: { type },
       }),
-      invalidatesTags: ["Me", "User"],
+      invalidatesTags: ["Me", "User", "FollowList"],
     }),
 
     unfollowUser: builder.mutation<unknown, FollowMutationBody>({
@@ -62,7 +70,50 @@ export const pagepalUserApi = pagepalApi.injectEndpoints({
         method: "DELETE",
         params: { type },
       }),
-      invalidatesTags: ["Me", "User"],
+      invalidatesTags: ["Me", "User", "FollowList"],
+    }),
+
+    removeFollower: builder.mutation<unknown, { followerId: string }>({
+      query: ({ followerId }) => ({
+        url: `/user/${followerId}/remove-follower`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Me", "User", "FollowList"],
+    }),
+
+    getUserFollowers: builder.query<PaginatedResponse<PagePalUser>, FollowListQueryParams>({
+      query: ({ userId, page = 1, limit = 20, search }) => ({
+        url: `/user/${userId}/followers`,
+        method: "GET",
+        params: {
+          type: "user",
+          page,
+          limit,
+          search: search?.trim() ? search.trim() : undefined,
+        },
+      }),
+      transformResponse: (response: PaginatedResponse<BackendUser>) => ({
+        data: (response?.data ?? []).map((user) => mapUser(user)),
+        meta: response?.meta,
+      }),
+      providesTags: ["FollowList"],
+    }),
+
+    getUserFollowing: builder.query<PaginatedResponse<PagePalUser>, FollowListQueryParams>({
+      query: ({ userId, page = 1, limit = 20, search }) => ({
+        url: `/user/${userId}/following`,
+        method: "GET",
+        params: {
+          page,
+          limit,
+          search: search?.trim() ? search.trim() : undefined,
+        },
+      }),
+      transformResponse: (response: PaginatedResponse<BackendUser>) => ({
+        data: (response?.data ?? []).map((user) => mapUser(user)),
+        meta: response?.meta,
+      }),
+      providesTags: ["FollowList"],
     }),
 
     getRecommendations: builder.query<CursorResponse<Book>, void>({
@@ -83,5 +134,8 @@ export const {
   useGetUserByIdQuery,
   useFollowUserMutation,
   useUnfollowUserMutation,
+  useRemoveFollowerMutation,
+  useGetUserFollowersQuery,
+  useGetUserFollowingQuery,
   useGetRecommendationsQuery,
 } = pagepalUserApi;

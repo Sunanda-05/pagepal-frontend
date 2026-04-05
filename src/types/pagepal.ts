@@ -25,6 +25,7 @@ export interface PagePalUser {
   booksRead: number;
   reviewsWritten: number;
   isFollowing?: boolean;
+  followsYou?: boolean;
   currentlyReadingBookId?: string;
 }
 

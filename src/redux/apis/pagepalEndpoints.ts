@@ -8,6 +8,9 @@ export {
   useGetUserByIdQuery,
   useFollowUserMutation,
   useUnfollowUserMutation,
+  useRemoveFollowerMutation,
+  useGetUserFollowersQuery,
+  useGetUserFollowingQuery,
   useGetRecommendationsQuery,
 } from "@/redux/apis/pagepalUserApi";
 

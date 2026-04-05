@@ -13,6 +13,7 @@ export const pagepalApi = createApi({
     "Collection",
     "CollectionList",
     "Recommendation",
+    "FollowList",
     "Tag",
     "AuthorApplication",
     "AdminApplication",

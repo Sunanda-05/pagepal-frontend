@@ -40,6 +40,12 @@ export interface BackendUser {
   name: string;
   bio?: string | null;
   role: "USER" | "AUTHOR" | "ADMIN";
+  followersCount?: number;
+  followingCount?: number;
+  booksRead?: number;
+  reviewsWritten?: number;
+  isFollowing?: boolean;
+  followsYou?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -147,10 +153,12 @@ export function mapUser(raw: BackendUser): PagePalUser {
     username: raw.username,
     bio: raw.bio ?? "",
     role: raw.role,
-    followersCount: 0,
-    followingCount: 0,
-    booksRead: 0,
-    reviewsWritten: 0,
+    followersCount: asSafeNumber(raw.followersCount),
+    followingCount: asSafeNumber(raw.followingCount),
+    booksRead: asSafeNumber(raw.booksRead),
+    reviewsWritten: asSafeNumber(raw.reviewsWritten),
+    isFollowing: Boolean(raw.isFollowing),
+    followsYou: Boolean(raw.followsYou),
   };
 }
 

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import BookCover from "@/components/ui/BookCover";
 import EmptyState from "@/components/ui/EmptyState";
 import LoadMoreButton from "@/components/ui/LoadMoreButton";
@@ -33,9 +33,34 @@ export function HomeScreen() {
   const [createCollection, { isLoading: creatingShelf }] = useCreateCollectionMutation();
   const [addBookToCollection, { isLoading: savingToShelf }] = useAddBookToCollectionMutation();
 
-  const books = recommendations?.items ?? [];
+  const recommendationBooks = recommendations?.items ?? [];
   const shelfCollection = (myCollectionsData?.items ?? []).find((collection) => isShelfCollectionName(collection.name));
-  const activityItems = books.slice(0, 10).map((book, index) => {
+  const recommendationLookup = new Map(recommendationBooks.map((book) => [book.id, book]));
+
+  const shelfBooks: Book[] = (shelfCollection?.books ?? []).map((entry) => {
+    const matchedBook = recommendationLookup.get(entry.bookId);
+
+    if (matchedBook) {
+      return matchedBook;
+    }
+
+    return {
+      id: entry.bookId,
+      title: `Book ${entry.bookId.slice(0, 8)}`,
+      authorId: "",
+      authorName: "Unknown author",
+      description: "",
+      genre: "Unknown",
+      year: new Date().getFullYear(),
+      isbn: "",
+      avgRating: 0,
+      reviewCount: 0,
+      coverTone: "primary",
+      tags: [],
+    };
+  });
+
+  const activityItems = recommendationBooks.slice(0, 10).map((book, index) => {
     const actionType = index % 3 === 0 ? "reviewed" : index % 3 === 1 ? "rated" : "added";
     const occurredAt = new Date(Date.now() - (index + 1) * 60 * 60 * 1000).toISOString();
     const actor = ["Priya", "Dev", "Ananya", "Karan", "Ishita"][index % 5];
@@ -98,11 +123,10 @@ export function HomeScreen() {
       }
     >
       <section className="space-y-5">
-        {books.length > 0 ? (
+        {shelfBooks.length > 0 ? (
           <ShelfStrip
-            books={books.slice(0, 10)}
+            books={shelfBooks.slice(0, 10)}
             currentBookId={me?.currentlyReadingBookId}
-            desktopGrid
             onAddBook={() => setSheetOpen(true)}
           />
         ) : isLoading ? (
@@ -167,11 +191,11 @@ export function HomeScreen() {
       </section>
 
       <BottomSheet isOpen={sheetOpen} onOpenChange={setSheetOpen} title="Add book to shelf">
-        {books.length === 0 ? (
+        {recommendationBooks.length === 0 ? (
           <EmptyState title="No books available." subtitle="Try discovery to find books first." />
         ) : (
           <div className="space-y-2">
-            {books.slice(0, 8).map((book) => (
+            {recommendationBooks.slice(0, 8).map((book) => (
               <button
                 key={book.id}
                 type="button"

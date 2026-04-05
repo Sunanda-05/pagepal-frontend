@@ -1,4 +1,4 @@
-import { AuthorProfileScreen } from "@/features/pagepal/screens/AuthorProfileScreen";
+import { AuthorProfileScreen } from "@/components/screens/AuthorProfileScreen";
 
 export default async function AuthorProfilePage({
   params,

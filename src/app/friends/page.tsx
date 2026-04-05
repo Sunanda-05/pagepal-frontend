@@ -1,4 +1,4 @@
-import { FriendsScreen } from "@/features/pagepal/screens/FriendsScreen";
+import { FriendsScreen } from "@/components/screens/FriendsScreen";
 
 export default function FriendsPage() {
   return <FriendsScreen />;

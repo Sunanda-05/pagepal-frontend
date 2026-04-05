@@ -1,4 +1,4 @@
-import { AuthorApplyScreen } from "@/features/pagepal/screens/AuthorApplyScreen";
+import { AuthorApplyScreen } from "@/components/screens/AuthorApplyScreen";
 
 export default function AuthorApplyPage() {
   return <AuthorApplyScreen />;

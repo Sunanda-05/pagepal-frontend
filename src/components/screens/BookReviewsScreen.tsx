@@ -8,7 +8,7 @@ import {
   IconShare3,
 } from "@tabler/icons-react";
 import { Button } from "@heroui/button";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import EmptyState from "@/components/ui/EmptyState";
 import LoadMoreButton from "@/components/ui/LoadMoreButton";
 import StarRating from "@/components/ui/StarRating";
@@ -88,7 +88,7 @@ export function BookReviewsScreen({ bookId }: { bookId: string }) {
         <div className="pointer-events-none fixed inset-x-0 bottom-6 z-30 flex justify-center px-4">
           <Button
             as={Link}
-            href={`/books/${bookId}`}
+            href={`/books/${bookId}#review-composer`}
             className="pointer-events-auto h-11 rounded-full px-5"
             color="primary"
             startContent={<IconPencil size={16} />}

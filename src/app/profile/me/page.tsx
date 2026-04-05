@@ -1,4 +1,4 @@
-import { ProfileMeScreen } from "@/features/pagepal/screens/ProfileMeScreen";
+import { ProfileMeScreen } from "@/components/screens/ProfileMeScreen";
 
 export default function ProfileMePage() {
   return <ProfileMeScreen />;

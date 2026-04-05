@@ -5,7 +5,7 @@ import {
   IconPlus,
 } from "@tabler/icons-react";
 import { Button } from "@heroui/button";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import CollectionCard from "@/components/ui/CollectionCard";
 import EmptyState from "@/components/ui/EmptyState";
 import LoadMoreButton from "@/components/ui/LoadMoreButton";
@@ -17,7 +17,7 @@ import {
   useGetPublicCollectionsQuery,
   useGetSharedCollectionsQuery,
 } from "@/redux/apis/pagepalEndpoints";
-import CollectionForm from "@/features/pagepal/forms/CollectionForm";
+import CollectionForm from "@/components/forms/CollectionForm";
 import { CollectionFormValues } from "@/schemas/pagepalForms";
 
 export function CollectionsBaseScreen({

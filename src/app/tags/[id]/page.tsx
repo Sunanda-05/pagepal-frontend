@@ -1,4 +1,4 @@
-import { TagBooksScreen } from "@/features/pagepal/screens/TagBooksScreen";
+import { TagBooksScreen } from "@/components/screens/TagBooksScreen";
 
 export default async function TagPage({
   params,

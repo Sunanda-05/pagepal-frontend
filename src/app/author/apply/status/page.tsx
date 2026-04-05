@@ -1,4 +1,4 @@
-import { AuthorApplyStatusScreen } from "@/features/pagepal/screens/AuthorApplyStatusScreen";
+import { AuthorApplyStatusScreen } from "@/components/screens/AuthorApplyStatusScreen";
 
 export default function AuthorApplyStatusPage() {
   return <AuthorApplyStatusScreen />;

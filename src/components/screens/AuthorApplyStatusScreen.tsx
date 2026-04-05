@@ -8,7 +8,7 @@ import {
   IconHourglass,
 } from "@tabler/icons-react";
 import { Button } from "@heroui/button";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import EmptyState from "@/components/ui/EmptyState";
 import {
   useGetAuthorApplicationQuery,

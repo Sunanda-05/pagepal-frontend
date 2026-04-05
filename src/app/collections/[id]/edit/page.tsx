@@ -1,4 +1,4 @@
-import { CollectionCreateEditScreen } from "@/features/pagepal/screens/CollectionCreateEditScreen";
+import { CollectionCreateEditScreen } from "@/components/screens/CollectionCreateEditScreen";
 
 export default async function EditCollectionPage({
   params,

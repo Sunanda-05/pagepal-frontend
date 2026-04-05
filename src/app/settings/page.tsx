@@ -1,4 +1,4 @@
-import { SettingsScreen } from "@/features/pagepal/screens/SettingsScreen";
+import { SettingsScreen } from "@/components/screens/SettingsScreen";
 
 export default function SettingsPage() {
   return <SettingsScreen />;

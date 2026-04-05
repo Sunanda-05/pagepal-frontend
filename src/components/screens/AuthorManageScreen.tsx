@@ -6,7 +6,7 @@ import {
   IconPlus,
 } from "@tabler/icons-react";
 import { Button } from "@heroui/button";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import RoleGate from "@/components/ui/RoleGate";
 import BookCover from "@/components/ui/BookCover";
 import EmptyState from "@/components/ui/EmptyState";

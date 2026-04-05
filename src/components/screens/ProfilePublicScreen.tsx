@@ -2,7 +2,7 @@
 
 import React, {  } from "react";
 import Link from "next/link";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import EmptyState from "@/components/ui/EmptyState";
 import TagChip from "@/components/ui/TagChip";
 import UserAvatar from "@/components/ui/UserAvatar";

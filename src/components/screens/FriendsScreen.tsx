@@ -6,18 +6,20 @@ import {
   IconSearch,
 } from "@tabler/icons-react";
 import { Input } from "@heroui/input";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import EmptyState from "@/components/ui/EmptyState";
 import LoadMoreButton from "@/components/ui/LoadMoreButton";
 import { FeedItemSkeleton } from "@/components/ui/Skeletons";
 import {
   useGetMeQuery,
+  useGetFollowSuggestionsQuery,
   useGetUserFollowersQuery,
   useGetUserFollowingQuery,
 } from "@/redux/apis/pagepalEndpoints";
 import useDebouncedValue from "@/hooks/useDebouncedValue";
 import { PagePalUser } from "@/types/pagepal";
 import { FollowListItem } from "@/components/shared/FollowUtils";
+import UserSearchPicker from "@/components/shared/UserSearchPicker";
 
 export function FriendsScreen() {
   const searchParams = useSearchParams();
@@ -27,6 +29,8 @@ export function FriendsScreen() {
   const debouncedSearch = useDebouncedValue(searchText, 300);
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<PagePalUser[]>([]);
+  const [selectedSearchUser, setSelectedSearchUser] = useState<PagePalUser | null>(null);
+  const [dismissedSuggestionIds, setDismissedSuggestionIds] = useState<string[]>([]);
 
   const { data: me } = useGetMeQuery();
   const queryUserId = searchParams.get("userId");
@@ -61,6 +65,23 @@ export function FriendsScreen() {
   const activeFetching = tab === "followers" ? followersQuery.isFetching : followingQuery.isFetching;
   const activeError = tab === "followers" ? followersQuery.isError : followingQuery.isError;
 
+  const isOwnList = Boolean(me?.id && targetUserId === me.id);
+  const suggestionsQuery = useGetFollowSuggestionsQuery(
+    { limit: 8 },
+    { skip: !isOwnList }
+  );
+
+  const suggestions = React.useMemo(() => {
+    const blockedIds = new Set(dismissedSuggestionIds);
+
+    return (suggestionsQuery.data ?? []).filter(
+      (user) =>
+        user.id !== me?.id &&
+        !Boolean(user.isFollowing) &&
+        !blockedIds.has(user.id)
+    );
+  }, [dismissedSuggestionIds, me?.id, suggestionsQuery.data]);
+
   React.useEffect(() => {
     setPage(1);
     setItems([]);
@@ -84,9 +105,18 @@ export function FriendsScreen() {
     });
   }, [activeResponse, page]);
 
+  const handleSuggestionFollowChange = (userId: string, isFollowing: boolean) => {
+    if (!isFollowing) {
+      return;
+    }
+
+    setDismissedSuggestionIds((prev) =>
+      prev.includes(userId) ? prev : [...prev, userId]
+    );
+  };
+
   const totalPages = activeResponse?.meta?.totalPages ?? 1;
   const canLoadMore = page < totalPages;
-  const isOwnList = Boolean(me?.id && targetUserId === me.id);
 
   return (
     <AppShell zone="D" pageTitle="Friends">
@@ -143,6 +173,49 @@ export function FriendsScreen() {
             ) : null}
           </section>
         )}
+
+        {isOwnList ? (
+          <section className="space-y-3">
+            <section className="space-y-3 rounded-2xl border border-border bg-surface p-3">
+              <p className="section-kicker">Find users</p>
+              <UserSearchPicker
+                selectedUser={selectedSearchUser}
+                onSelectUser={setSelectedSearchUser}
+                placeholder="Search by name, username, or email"
+                excludedUserIds={me?.id ? [me.id] : []}
+              />
+
+              {selectedSearchUser ? (
+                <FollowListItem key={`search-${selectedSearchUser.id}`} user={selectedSearchUser} />
+              ) : null}
+            </section>
+
+            <section className="space-y-2">
+              <p className="section-kicker">Suggested for you</p>
+
+              {suggestionsQuery.isLoading ? (
+                <div className="space-y-2">
+                  <FeedItemSkeleton />
+                  <FeedItemSkeleton />
+                </div>
+              ) : suggestions.length === 0 ? (
+                <p className="text-xs text-text-muted">No suggestions right now. Check back later.</p>
+              ) : (
+                <div className="space-y-2">
+                  {suggestions.map((user) => (
+                    <FollowListItem
+                      key={`suggestion-${user.id}`}
+                      user={user}
+                      onFollowChange={(isFollowing) =>
+                        handleSuggestionFollowChange(user.id, isFollowing)
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+          </section>
+        ) : null}
       </section>
     </AppShell>
   );

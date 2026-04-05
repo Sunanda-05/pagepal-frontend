@@ -11,7 +11,13 @@ import {
 } from "@/redux/apis/pagepalEndpoints";
 import { PagePalUser } from "@/types/pagepal";
 
-export function FollowListItem({ user, canRemoveFollower = false }: { user: PagePalUser; canRemoveFollower?: boolean }) {
+interface FollowListItemProps {
+  user: PagePalUser;
+  canRemoveFollower?: boolean;
+  onFollowChange?: (isFollowing: boolean) => void;
+}
+
+export function FollowListItem({ user, canRemoveFollower = false, onFollowChange }: FollowListItemProps) {
   const [removeFollower, { isLoading: removingFollower }] = useRemoveFollowerMutation();
 
   const handleRemoveFollower = async () => {
@@ -37,7 +43,12 @@ export function FollowListItem({ user, canRemoveFollower = false }: { user: Page
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <FollowButton userId={user.id} isFollowing={Boolean(user.isFollowing)} type="user" />
+          <FollowButton
+            userId={user.id}
+            isFollowing={Boolean(user.isFollowing)}
+            type="user"
+            onChange={onFollowChange}
+          />
           {canRemoveFollower ? (
             <Button
               size="sm"
@@ -55,10 +66,21 @@ export function FollowListItem({ user, canRemoveFollower = false }: { user: Page
   );
 }
 
-export function FollowButton({ userId, isFollowing = false, type = "user" }: { userId: string; isFollowing?: boolean; type?: "user" | "author" }) {
+interface FollowButtonProps {
+  userId: string;
+  isFollowing?: boolean;
+  type?: "user" | "author";
+  onChange?: (isFollowing: boolean) => void;
+}
+
+export function FollowButton({ userId, isFollowing = false, type = "user", onChange }: FollowButtonProps) {
   const [followUser, { isLoading: followLoading }] = useFollowUserMutation();
   const [unfollowUser, { isLoading: unfollowLoading }] = useUnfollowUserMutation();
   const [optimisticFollowing, setOptimisticFollowing] = useState(isFollowing);
+
+  React.useEffect(() => {
+    setOptimisticFollowing(isFollowing);
+  }, [isFollowing]);
 
   const loading = followLoading || unfollowLoading;
 
@@ -72,6 +94,8 @@ export function FollowButton({ userId, isFollowing = false, type = "user" }: { u
       } else {
         await unfollowUser({ userId, type }).unwrap();
       }
+
+      onChange?.(next);
     } catch {
       setOptimisticFollowing(!next);
     }

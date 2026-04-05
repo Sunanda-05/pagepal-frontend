@@ -6,7 +6,7 @@ import {
   IconShare3,
 } from "@tabler/icons-react";
 import { Button } from "@heroui/button";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import BookCover from "@/components/ui/BookCover";
 import EmptyState from "@/components/ui/EmptyState";
 import ReviewCard from "@/components/ui/ReviewCard";
@@ -21,20 +21,24 @@ import {
   useCreateReviewMutation,
   useGetBookByIdQuery,
   useGetFilteredBooksQuery,
+  useGetMeQuery,
   useGetMyCollectionsQuery,
   useGetRatingsQuery,
   useGetReviewsQuery,
   useSubmitRatingMutation,
+  useUpdateReviewMutation,
 } from "@/redux/apis/pagepalEndpoints";
-import ReviewComposer from "@/features/pagepal/forms/ReviewComposer";
+import ReviewComposer from "@/components/forms/ReviewComposer";
 
 export function BookDetailScreen({ bookId }: { bookId: string }) {
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("Saved successfully.");
   const [sheetOpen, setSheetOpen] = useState(false);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const reviewComposerRef = React.useRef<HTMLDivElement | null>(null);
 
   const { data: book, isLoading: bookLoading } = useGetBookByIdQuery(bookId);
+  const { data: me } = useGetMeQuery();
   const { data: reviewData, isLoading: reviewsLoading } = useGetReviewsQuery({ bookId });
   const { data: ratingsData } = useGetRatingsQuery({ bookId });
   const { data: myCollectionsData } = useGetMyCollectionsQuery();
@@ -49,14 +53,17 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
 
   const [submitRating, { isLoading: ratingLoading }] = useSubmitRatingMutation();
   const [createReview, { isLoading: reviewLoading }] = useCreateReviewMutation();
+  const [updateReview, { isLoading: updateReviewLoading }] = useUpdateReviewMutation();
   const [addBookToCollection, { isLoading: addToCollectionLoading }] = useAddBookToCollectionMutation();
 
   const reviews = reviewData?.items ?? [];
+  const myReview = reviews.find((review) => review.userId === me?.id);
   const featuredReview = reviews[0];
   const listedReviews = reviews.slice(1, 5);
   const collections = myCollectionsData?.items ?? [];
   const ratingSummary = ratingsData ?? { average: 0, count: 0 };
   const similarBooks = (similarData?.items ?? []).filter((candidate) => candidate.id !== bookId);
+  const isSavingReview = reviewLoading || updateReviewLoading;
 
   const fullDescription = book?.description ?? "";
   const hasLongDescription = fullDescription.length > 200;
@@ -67,8 +74,18 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
       await submitRating({ bookId, rating: values.rating }).unwrap().catch(() => undefined);
     }
 
-    await createReview({ bookId, review: values.text }).unwrap();
-    setToastMessage("Review saved.");
+    if (myReview?.id) {
+      await updateReview({
+        bookId,
+        reviewId: myReview.id,
+        review: values.text,
+      }).unwrap();
+      setToastMessage("Review updated.");
+    } else {
+      await createReview({ bookId, review: values.text }).unwrap();
+      setToastMessage("Review saved.");
+    }
+
     setToastOpen(true);
   };
 
@@ -169,8 +186,15 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
           </div>
 
           <div className="mt-4 grid gap-3">
-            <Button color="primary" radius="full" className="h-11" onPress={() => undefined}>
-              {reviews.length > 0 ? "Edit your review" : "Write a review"}
+            <Button
+              color="primary"
+              radius="full"
+              className="h-11"
+              onPress={() => {
+                reviewComposerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+              }}
+            >
+              {myReview ? "Edit your review" : "Write a review"}
             </Button>
             <Button color="default" radius="full" variant="bordered" className="h-11 border-white text-white" onPress={() => setSheetOpen(true)}>
               Add to collection
@@ -215,7 +239,16 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
 
           {featuredReview ? <ReviewCard review={featuredReview} styleType="pull-quote" /> : null}
 
-          <ReviewComposer onSubmit={handleReviewSubmit} isSubmitting={reviewLoading} />
+          <div id="review-composer" ref={reviewComposerRef}>
+            <ReviewComposer
+              onSubmit={handleReviewSubmit}
+              isSubmitting={isSavingReview}
+              initialValues={myReview ? { text: myReview.text, rating: 0 } : undefined}
+              heading={myReview ? "Edit your review" : "Write a review"}
+              submitLabel={myReview ? "Update review" : "Save review"}
+              resetAfterSubmit={!myReview}
+            />
+          </div>
 
           {reviewsLoading ? (
             <ReviewCardSkeleton />

@@ -1,4 +1,4 @@
-import { AuthorManageBookFormScreen } from "@/features/pagepal/screens/AuthorManageBookFormScreen";
+import { AuthorManageBookFormScreen } from "@/components/screens/AuthorManageBookFormScreen";
 
 export default async function AuthorEditBookPage({
   params,

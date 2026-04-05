@@ -1,4 +1,4 @@
-import { AdminApplicationDetailScreen } from "@/features/pagepal/screens/AdminApplicationDetailScreen";
+import { AdminApplicationDetailScreen } from "@/components/screens/AdminApplicationDetailScreen";
 
 export default async function AdminApplicationDetailPage({
   params,

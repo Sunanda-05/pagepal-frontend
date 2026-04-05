@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import RoleGate from "@/components/ui/RoleGate";
 import ToastNotice from "@/components/ui/ToastNotice";
 import {
@@ -9,7 +9,7 @@ import {
   useGetBookByIdQuery,
   usePatchBookMutation,
 } from "@/redux/apis/pagepalEndpoints";
-import BookEditorForm from "@/features/pagepal/forms/BookEditorForm";
+import BookEditorForm from "@/components/forms/BookEditorForm";
 import { BookFormValues } from "@/schemas/pagepalForms";
 
 export function AuthorManageBookFormScreen({ bookId }: { bookId?: string }) {

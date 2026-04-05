@@ -1,4 +1,4 @@
-import { RecommendationsScreen } from "@/features/pagepal/screens/RecommendationsScreen";
+import { RecommendationsScreen } from "@/components/screens/RecommendationsScreen";
 
 export default function RecommendationsPage() {
   return <RecommendationsScreen />;

@@ -1,4 +1,4 @@
-import { BookReviewsScreen } from "@/features/pagepal/screens/BookReviewsScreen";
+import { BookReviewsScreen } from "@/components/screens/BookReviewsScreen";
 
 export default async function BookReviewsPage({
   params,

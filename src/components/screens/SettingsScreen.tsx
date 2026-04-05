@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import TagChip from "@/components/ui/TagChip";
 import ToastNotice from "@/components/ui/ToastNotice";
 import {

@@ -1,4 +1,4 @@
-import { PublicCollectionsScreen } from "@/features/pagepal/screens/PublicCollectionsScreen";
+import { PublicCollectionsScreen } from "@/components/screens/PublicCollectionsScreen";
 
 export default function PublicCollectionsPage() {
   return <PublicCollectionsScreen />;

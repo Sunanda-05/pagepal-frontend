@@ -6,7 +6,7 @@ import {
   IconSettings,
 } from "@tabler/icons-react";
 import { Tab, Tabs } from "@heroui/tabs";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import BookCover from "@/components/ui/BookCover";
 import CollectionCard from "@/components/ui/CollectionCard";
 import EmptyState from "@/components/ui/EmptyState";

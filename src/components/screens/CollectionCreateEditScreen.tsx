@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import ToastNotice from "@/components/ui/ToastNotice";
 import {
   useCreateCollectionMutation,
   useGetCollectionByIdQuery,
   useUpdateCollectionMutation,
 } from "@/redux/apis/pagepalEndpoints";
-import CollectionForm from "@/features/pagepal/forms/CollectionForm";
+import CollectionForm from "@/components/forms/CollectionForm";
 import { CollectionFormValues } from "@/schemas/pagepalForms";
 import { isShelfCollectionName } from "@/utils/bookUtil";
 

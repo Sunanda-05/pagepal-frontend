@@ -22,6 +22,12 @@ export interface FollowListQueryParams {
   search?: string;
 }
 
+export interface UserSearchQueryParams {
+  query: string;
+  page?: number;
+  limit?: number;
+}
+
 export const pagepalUserApi = pagepalApi.injectEndpoints({
   overrideExisting: true,
   endpoints: (builder) => ({
@@ -116,6 +122,35 @@ export const pagepalUserApi = pagepalApi.injectEndpoints({
       providesTags: ["FollowList"],
     }),
 
+    searchUsers: builder.query<PaginatedResponse<PagePalUser>, UserSearchQueryParams>({
+      query: ({ query, page = 1, limit = 10 }) => ({
+        url: "/user/search",
+        method: "GET",
+        params: {
+          query: query.trim(),
+          page,
+          limit,
+        },
+      }),
+      transformResponse: (response: PaginatedResponse<BackendUser>) => ({
+        data: (response?.data ?? []).map((user) => mapUser(user)),
+        meta: response?.meta,
+      }),
+      providesTags: ["User"],
+    }),
+
+    getFollowSuggestions: builder.query<PagePalUser[], { limit?: number } | void>({
+      query: (arg) => ({
+        url: "/user/suggestions",
+        method: "GET",
+        params: {
+          limit: arg?.limit ?? 8,
+        },
+      }),
+      transformResponse: (response: BackendUser[]) => (response ?? []).map((user) => mapUser(user)),
+      providesTags: ["FollowList", "User"],
+    }),
+
     getRecommendations: builder.query<CursorResponse<Book>, void>({
       query: () => ({
         url: "/user/recommendations",
@@ -137,5 +172,7 @@ export const {
   useRemoveFollowerMutation,
   useGetUserFollowersQuery,
   useGetUserFollowingQuery,
+  useSearchUsersQuery,
+  useGetFollowSuggestionsQuery,
   useGetRecommendationsQuery,
 } = pagepalUserApi;

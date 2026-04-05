@@ -24,29 +24,36 @@ function visibilityClass(value: Collection["visibility"]): string {
 export default function CollectionCard({ collection, books }: CollectionCardProps) {
   const sourceBooks = books?.length ? books : [];
   const visibleCovers = sourceBooks.slice(0, 4);
-  const placeholders = Math.max(0, 4 - visibleCovers.length);
+  const mosaicSlots = Array.from({ length: 4 }, (_slot, index) => visibleCovers[index] ?? null);
 
   return (
     <Link
       href={`/collections/${collection.id}`}
       className="block rounded-xl border border-border bg-surface p-3 transition-all duration-200 hover:border-primary/45"
     >
-      <div className="relative overflow-hidden rounded-xl border border-border bg-surface-secondary p-2">
-        <div className="grid grid-cols-2 gap-2">
-          {visibleCovers.map((book) => (
-            <BookCover key={`${collection.id}-${book.id}`} title={book.title} seed={book.id} size="xs" className="h-full w-full" hideTitle />
-          ))}
-          {Array.from({ length: placeholders }).map((_, index) => (
-            <div
-              key={`placeholder-${index}`}
-              className="aspect-[40/55] rounded-md border border-dashed border-border bg-primary/10"
-            />
-          ))}
-          {visibleCovers.length === 0 ? (
-            <div className="col-span-2 flex aspect-square items-center justify-center rounded-lg border border-dashed border-border">
-              <div className="empty-shape scale-75" />
-            </div>
-          ) : null}
+      <div className="relative overflow-hidden rounded-xl border border-border bg-surface-secondary p-1.5">
+        <div className="grid grid-cols-2 gap-1.5">
+          {mosaicSlots.map((book, index) =>
+            book ? (
+              <BookCover
+                key={`${collection.id}-${book.id}`}
+                title={book.title}
+                seed={book.id}
+                size="xs"
+                className="h-full w-full"
+                hideTitle
+              />
+            ) : (
+              <div
+                key={`${collection.id}-placeholder-${index}`}
+                className="flex aspect-[4/5] items-center justify-center rounded-md border border-dashed border-border bg-primary/10"
+              >
+                {visibleCovers.length === 0 && index === 0 ? (
+                  <div className="empty-shape scale-50" />
+                ) : null}
+              </div>
+            )
+          )}
         </div>
         <span className={`absolute bottom-2 right-2 rounded-full px-2 py-0.5 text-[10px] ${visibilityClass(collection.visibility)}`}>
           {visibilityLabel(collection.visibility)}

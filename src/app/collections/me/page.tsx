@@ -1,4 +1,4 @@
-import { CollectionsMeScreen } from "@/features/pagepal/screens/CollectionsMeScreen";
+import { CollectionsMeScreen } from "@/components/screens/CollectionsMeScreen";
 
 export default function MyCollectionsPage() {
   return <CollectionsMeScreen />;

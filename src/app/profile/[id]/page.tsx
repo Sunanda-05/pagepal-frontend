@@ -1,4 +1,4 @@
-import { ProfilePublicScreen } from "@/features/pagepal/screens/ProfilePublicScreen";
+import { ProfilePublicScreen } from "@/components/screens/ProfilePublicScreen";
 
 export default async function ProfilePublicPage({
   params,

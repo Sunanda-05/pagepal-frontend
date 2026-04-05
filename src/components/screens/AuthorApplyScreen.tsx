@@ -4,13 +4,13 @@ import React, { useState } from "react";
 import {
   IconBook,
 } from "@tabler/icons-react";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import RoleGate from "@/components/ui/RoleGate";
 import ToastNotice from "@/components/ui/ToastNotice";
 import {
   useSubmitAuthorApplicationMutation,
 } from "@/redux/apis/pagepalEndpoints";
-import AuthorApplicationForm from "@/features/pagepal/forms/AuthorApplicationForm";
+import AuthorApplicationForm from "@/components/forms/AuthorApplicationForm";
 
 export function AuthorApplyScreen() {
   const [toastOpen, setToastOpen] = useState(false);

@@ -13,11 +13,19 @@ import {
 interface ReviewComposerProps {
   onSubmit: (values: ReviewFormValues) => Promise<void> | void;
   isSubmitting?: boolean;
+  initialValues?: Partial<ReviewFormValues>;
+  heading?: string;
+  submitLabel?: string;
+  resetAfterSubmit?: boolean;
 }
 
 export default function ReviewComposer({
   onSubmit,
   isSubmitting = false,
+  initialValues,
+  heading = "Write a review",
+  submitLabel = "Save review",
+  resetAfterSubmit = true,
 }: ReviewComposerProps) {
   const {
     control,
@@ -29,19 +37,29 @@ export default function ReviewComposer({
     resolver: zodResolver(reviewFormSchema),
     mode: "onChange",
     defaultValues: {
-      rating: 0,
-      text: "",
+      rating: initialValues?.rating ?? 0,
+      text: initialValues?.text ?? "",
     },
   });
 
+  React.useEffect(() => {
+    reset({
+      rating: initialValues?.rating ?? 0,
+      text: initialValues?.text ?? "",
+    });
+  }, [initialValues?.rating, initialValues?.text, reset]);
+
   const handleValidSubmit = async (values: ReviewFormValues) => {
     await onSubmit(values);
-    reset({ rating: 0, text: "" });
+
+    if (resetAfterSubmit) {
+      reset({ rating: 0, text: "" });
+    }
   };
 
   return (
     <form onSubmit={handleSubmit(handleValidSubmit)} className="space-y-3 rounded-2xl border border-border bg-surface p-4">
-      <p className="section-kicker">Write a review</p>
+      <p className="section-kicker">{heading}</p>
 
       <Controller
         name="rating"
@@ -65,7 +83,7 @@ export default function ReviewComposer({
       </div>
 
       <Button type="submit" color="primary" radius="sm" isLoading={isSubmitting} isDisabled={!isValid || isSubmitting}>
-        Save review
+        {submitLabel}
       </Button>
     </form>
   );

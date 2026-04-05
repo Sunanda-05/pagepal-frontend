@@ -1,4 +1,4 @@
-import { CollectionDetailScreen } from "@/features/pagepal/screens/CollectionDetailScreen";
+import { CollectionDetailScreen } from "@/components/screens/CollectionDetailScreen";
 
 export default async function CollectionDetailPage({
   params,

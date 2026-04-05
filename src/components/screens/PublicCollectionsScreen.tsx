@@ -1,7 +1,7 @@
 "use client";
 
 import React, {  } from "react";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import CollectionCard from "@/components/ui/CollectionCard";
 import EmptyState from "@/components/ui/EmptyState";
 import { BookCardSkeleton } from "@/components/ui/Skeletons";

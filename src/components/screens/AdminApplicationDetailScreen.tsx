@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@heroui/button";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import RoleGate from "@/components/ui/RoleGate";
 import EmptyState from "@/components/ui/EmptyState";
 import ToastNotice from "@/components/ui/ToastNotice";
@@ -12,7 +12,7 @@ import {
   useGetAdminAuthorApplicationsQuery,
   useReviewAuthorApplicationMutation,
 } from "@/redux/apis/pagepalEndpoints";
-import RejectApplicationInlineForm from "@/features/pagepal/forms/RejectApplicationInlineForm";
+import RejectApplicationInlineForm from "@/components/forms/RejectApplicationInlineForm";
 import { AuthorApplication } from "@/types/pagepal";
 
 export function AdminApplicationDetailScreen({ applicationId }: { applicationId: string }) {

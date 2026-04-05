@@ -2,14 +2,14 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import AppShell from "@/features/pagepal/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import EmptyState from "@/components/ui/EmptyState";
 import ToastNotice from "@/components/ui/ToastNotice";
 import {
   useGetMeQuery,
   usePatchMeMutation,
 } from "@/redux/apis/pagepalEndpoints";
-import ProfileEditForm from "@/features/pagepal/forms/ProfileEditForm";
+import ProfileEditForm from "@/components/forms/ProfileEditForm";
 import { ProfileEditValues } from "@/schemas/pagepalForms";
 
 export function ProfileEditScreen() {

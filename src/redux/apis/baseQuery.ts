@@ -6,11 +6,10 @@ import {
 import type { BaseQueryFn } from "@reduxjs/toolkit/query";
 import { logout, updateToken } from "../features/userSlice";
 import type { RootState } from "../store";
+import { clearSessionCookie } from "@/utils/sessionCookie";
+import { resolveBackendBaseUrl } from "./resolveBackendUrl";
 
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-if(!backendUrl) {
-  throw new Error("NEXT_PUBLIC_BACKEND_URL is not defined");
-}
+const backendUrl = resolveBackendBaseUrl();
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: backendUrl,
@@ -40,6 +39,7 @@ async function attemptTokenRefresh(
     if (refreshResponse.error) {
       console.warn("Token refresh failed:", refreshResponse.error);
       api.dispatch(logout());
+      clearSessionCookie();
       return null;
     }
 
@@ -53,10 +53,12 @@ async function attemptTokenRefresh(
 
     console.warn("No access token returned from refresh endpoint");
     api.dispatch(logout());
+    clearSessionCookie();
     return null;
   } catch (err) {
     console.error("Unexpected error during token refresh:", err);
     api.dispatch(logout());
+    clearSessionCookie();
     return null;
   }
 }

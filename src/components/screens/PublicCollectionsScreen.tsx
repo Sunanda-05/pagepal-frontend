@@ -18,7 +18,7 @@ export function PublicCollectionsScreen() {
       <section className="space-y-4">
         <header>
           <h2 className="serif-display text-[20px] text-text">Public collections</h2>
-          <p className="text-[13px] text-text-muted">Explore reading lists curated by the community.</p>
+          <p className="text-[13px] text-text-secondary">Explore reading lists curated by the community.</p>
         </header>
         {isLoading ? (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3">

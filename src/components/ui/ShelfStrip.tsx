@@ -67,14 +67,14 @@ export default function ShelfStrip({
                 {isCurrent ? <ProgressBar value={progress} className="mt-2" /> : null}
 
                 <p className="mt-2 line-clamp-2 text-[11px] leading-4 text-text">{book.title}</p>
-                <p className="book-title-secondary mt-1 truncate text-[10px] text-text-muted">{book.authorName}</p>
+                <p className="book-title-secondary mt-1 truncate text-[10px] text-text-secondary">{book.authorName}</p>
               </article>
             );
           })}
 
           <button
             type="button"
-            className="flex h-[112px] w-[82px] shrink-0 flex-col items-center justify-center rounded-md border border-dashed border-border text-text-muted"
+            className="flex h-[112px] w-[82px] shrink-0 flex-col items-center justify-center rounded-md border border-dashed border-border text-text-secondary"
             onClick={onAddBook}
           >
             <IconPlus size={20} />
@@ -84,7 +84,7 @@ export default function ShelfStrip({
 
         <button
           type="button"
-          className="absolute left-[-8px] top-[40%] hidden h-8 w-8 items-center justify-center rounded-full border border-border bg-surface text-text-muted opacity-0 transition-opacity group-hover:opacity-100 lg:flex"
+          className="absolute left-[-8px] top-[40%] hidden h-8 w-8 items-center justify-center rounded-full border border-border bg-surface text-text-secondary opacity-0 transition-opacity group-hover:opacity-100 lg:flex"
           onClick={() => scrollBy("left")}
           aria-label="Scroll shelf left"
         >
@@ -93,7 +93,7 @@ export default function ShelfStrip({
 
         <button
           type="button"
-          className="absolute right-[-8px] top-[40%] hidden h-8 w-8 items-center justify-center rounded-full border border-border bg-surface text-text-muted opacity-0 transition-opacity group-hover:opacity-100 lg:flex"
+          className="absolute right-[-8px] top-[40%] hidden h-8 w-8 items-center justify-center rounded-full border border-border bg-surface text-text-secondary opacity-0 transition-opacity group-hover:opacity-100 lg:flex"
           onClick={() => scrollBy("right")}
           aria-label="Scroll shelf right"
         >

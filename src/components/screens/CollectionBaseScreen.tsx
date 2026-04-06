@@ -56,7 +56,7 @@ export function CollectionsBaseScreen({
     <AppShell
       zone={source === "public" ? "A" : "D"}
       pageTitle={title}
-      actionSlot={canCreate ? <button type="button" onClick={() => setSheetOpen(true)}><IconPlus size={18} className="text-text-muted" /></button> : null}
+      actionSlot={canCreate ? <button type="button" onClick={() => setSheetOpen(true)}><IconPlus size={18} className="text-text-secondary" /></button> : null}
     >
       <section className="space-y-4">
         <div className="flex items-center justify-between">
@@ -77,7 +77,7 @@ export function CollectionsBaseScreen({
                 <button
                   type="button"
                   onClick={() => setSheetOpen(true)}
-                  className="flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed border-border text-text-muted"
+                  className="flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed border-border text-text-secondary"
                 >
                   <IconPlus size={18} />
                   <span className="mt-2 text-sm">New collection</span>

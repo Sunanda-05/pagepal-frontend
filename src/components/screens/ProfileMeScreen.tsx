@@ -12,7 +12,6 @@ import CollectionCard from "@/components/ui/CollectionCard";
 import EmptyState from "@/components/ui/EmptyState";
 import ShelfStrip from "@/components/ui/ShelfStrip";
 import UserAvatar from "@/components/ui/UserAvatar";
-import ProgressBar from "@/components/ui/ProgressBar";
 import {
   useGetMeQuery,
   useGetMyCollectionsQuery,
@@ -81,8 +80,8 @@ export function ProfileMeScreen() {
               <div className="min-w-0 flex-1">
                 <p className="serif-display line-clamp-2 text-[15px] text-text">{currentBook.title}</p>
                 <p className="text-xs text-text-muted">{currentBook.authorName}</p>
-                <ProgressBar value={67} className="mt-3" />
-                <p className="mono-meta mt-1">67% · Chapter 18 of 27</p>
+                {/* <ProgressBar value={67} className="mt-3" />
+                <p className="mono-meta mt-1">67% · Chapter 18 of 27</p> */}
               </div>
             </div>
           ) : (

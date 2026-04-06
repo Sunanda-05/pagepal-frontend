@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconCompass, IconFriends, IconHome, IconUserCircle } from "@tabler/icons-react";
+import { IconChevronRight, IconCompass, IconFriends, IconHome, IconMenu2, IconUserCircle } from "@tabler/icons-react";
 import { useRole } from "@/hooks/useRole";
 import { UserRole } from "@/types/pagepal";
 import { themes } from "@/data/theme";
+import BottomSheet from "@/components/ui/BottomSheet";
 
 interface AppShellProps {
   zone: "A" | "B" | "C" | "D" | "E";
@@ -24,7 +25,7 @@ interface NavItem {
 const navGroups: Array<{ title?: string; items: NavItem[] }> = [
   {
     items: [
-      { href: "/", label: "Home" },
+      { href: "/home", label: "Home" },
       { href: "/discover", label: "Discover" },
       { href: "/discover/recommendations", label: "Recommendations" },
     ],
@@ -74,6 +75,7 @@ export default function AppShell({
   const pathname = usePathname();
   const role = useRole();
   const [scrolled, setScrolled] = useState(false);
+  const [isMoreSheetOpen, setIsMoreSheetOpen] = useState(false);
   const themeSwatches = Object.values(themes).slice(0, 8);
 
   useEffect(() => {
@@ -86,12 +88,47 @@ export default function AppShell({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    setIsMoreSheetOpen(false);
+  }, [pathname]);
+
   const mobileTabs = [
-    { href: "/", label: "Shelf", icon: IconHome },
+    { href: "/home", label: "Shelf", icon: IconHome },
     { href: "/discover", label: "Discover", icon: IconCompass },
     { href: "/friends", label: "Friends", icon: IconFriends },
     { href: "/profile/me", label: "Profile", icon: IconUserCircle },
   ];
+
+  const mobileTabHrefSet = new Set(mobileTabs.map((tab) => tab.href));
+  const mobileFallbackTitles = ["Explore", "Social", "My Space", "Author", "Admin", "Account"];
+  const seenMobileRoutes = new Set(mobileTabHrefSet);
+  const mobileExtraGroups = navGroups
+    .map((group, index) => {
+      const items = group.items
+        .filter((item) => isVisible(item, role))
+        .filter((item) => {
+          if (seenMobileRoutes.has(item.href)) {
+            return false;
+          }
+
+          seenMobileRoutes.add(item.href);
+          return true;
+        });
+
+      if (items.length === 0) {
+        return null;
+      }
+
+      return {
+        title: group.title ?? mobileFallbackTitles[index] ?? "More",
+        items,
+      };
+    })
+    .filter((group): group is { title: string; items: NavItem[] } => Boolean(group));
+  const mobileExtraItems = mobileExtraGroups.flatMap((group) => group.items);
+  const isMoreRouteActive = mobileExtraItems.some(
+    (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
+  );
 
   return (
     <div className={`${zoneClass(zone)} min-h-screen pb-20 lg:pb-8`}>
@@ -102,7 +139,7 @@ export default function AppShell({
             <nav className="mt-8 space-y-5">
               {navGroups.map((group, index) => (
                 <section key={`group-${index}`} className="space-y-2">
-                  {group.title ? <p className="text-xs uppercase tracking-[0.12em] text-text-muted">{group.title}</p> : null}
+                  {group.title ? <p className="text-xs uppercase tracking-[0.12em] text-text-secondary">{group.title}</p> : null}
                   <div className="flex flex-col">
                     {group.items
                       .filter((item) => isVisible(item, role))
@@ -126,7 +163,7 @@ export default function AppShell({
           </div>
 
           <div>
-            <p className="mb-2 text-xs uppercase tracking-[0.12em] text-text-muted">Palette</p>
+            <p className="mb-2 text-xs uppercase tracking-[0.12em] text-text-secondary">Palette</p>
             <div className="grid grid-cols-4 gap-1">
               {themeSwatches.map((theme) => (
                 <span
@@ -164,8 +201,59 @@ export default function AppShell({
               </Link>
             );
           })}
+
+          {mobileExtraItems.length > 0 ? (
+            <button
+              type="button"
+              className="mobile-bottom-tab"
+              data-active={isMoreRouteActive || isMoreSheetOpen}
+              onClick={() => setIsMoreSheetOpen(true)}
+              aria-label="Open more navigation"
+            >
+              <IconMenu2 size={18} />
+              <span>More</span>
+              <span className="mobile-bottom-tab-dot" />
+            </button>
+          ) : null}
         </div>
       </nav>
+
+      {mobileExtraItems.length > 0 ? (
+        <BottomSheet
+          isOpen={isMoreSheetOpen}
+          onOpenChange={setIsMoreSheetOpen}
+          title="More"
+        >
+          <nav className="space-y-5">
+            {mobileExtraGroups.map((group) => (
+              <section key={`mobile-group-${group.title}`} className="space-y-2">
+                <p className="section-kicker">{group.title}</p>
+                <div className="space-y-1">
+                  {group.items.map((item) => {
+                    const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+                    return (
+                      <Link
+                        key={`mobile-sheet-${item.href}`}
+                        href={item.href}
+                        onClick={() => setIsMoreSheetOpen(false)}
+                        className={`flex items-center justify-between rounded-xl border px-3 py-2.5 text-sm transition-colors ${
+                          active
+                            ? "border-primary bg-surface-secondary text-text"
+                            : "border-border bg-surface text-text-secondary"
+                        }`}
+                      >
+                        <span>{item.label}</span>
+                        <IconChevronRight size={14} className={active ? "text-primary" : "text-text-muted"} />
+                      </Link>
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
+          </nav>
+        </BottomSheet>
+      ) : null}
     </div>
   );
 }

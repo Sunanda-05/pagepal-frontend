@@ -67,7 +67,7 @@ export function SettingsScreen() {
           <div className="space-y-2">
             <div className="flex items-center justify-between border-b border-divider py-2 text-sm">
               <span className="text-text-muted">Email address</span>
-              <span>{me?.username ? `${me.username}@example.com` : "Not available"}</span>
+              <span>{me?.email ? `${me.email}` : "Not available"}</span>
             </div>
             <div className="flex items-center justify-between border-b border-divider py-2 text-sm">
               <span className="text-text-muted">Password</span>

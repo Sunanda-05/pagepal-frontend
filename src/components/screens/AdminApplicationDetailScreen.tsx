@@ -77,7 +77,7 @@ export function AdminApplicationDetailScreen({ applicationId }: { applicationId:
               </section>
             ) : (
               <section className="border-t border-divider pt-3">
-                <p className="mono-meta">Reviewed on {new Date(application.submittedAt).toLocaleDateString()}</p>
+                <p className="mono-meta">Reviewed on {new Date(application.reviewedAt ?? application.submittedAt).toLocaleDateString()}</p>
                 {application.reason ? (
                   <div className="mt-2 border-l-2 border-border pl-4 text-sm text-text-muted">
                     {application.reason}

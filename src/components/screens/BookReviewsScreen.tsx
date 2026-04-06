@@ -31,7 +31,14 @@ export function BookReviewsScreen({ bookId }: { bookId: string }) {
     if (sort === "most-recent") {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     }
-    return b.rating - a.rating;
+
+    const aRating = typeof a.rating === "number" ? a.rating : -1;
+    const bRating = typeof b.rating === "number" ? b.rating : -1;
+    if (bRating !== aRating) {
+      return bRating - aRating;
+    }
+
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
   const ratingSummary = ratingsData ?? { average: 0, count: 0 };
@@ -75,7 +82,7 @@ export function BookReviewsScreen({ bookId }: { bookId: string }) {
                       <p className="text-[14px] font-semibold text-text">{review.userName}</p>
                       <p className="mono-meta">{relativeDateLabel(review.createdAt)}</p>
                     </div>
-                    <StarRating value={review.rating} size="sm" />
+                    {typeof review.rating === "number" ? <StarRating value={review.rating} size="sm" /> : null}
                   </header>
                   <p className="mt-3 text-[14px] leading-7 text-text-muted">{review.text}</p>
                 </article>

@@ -57,6 +57,7 @@ export interface BackendBook {
   genre: string;
   publishedYear: number;
   isbn?: string;
+  score?: number;
   author?: {
     id?: string;
     name?: string;
@@ -120,6 +121,7 @@ export interface BackendAuthorApplication {
   bio?: string | null;
   createdAt: string;
   updatedAt: string;
+  reviewedAt?: string | null;
   reason?: string | null;
   user?: {
     id: string;
@@ -149,6 +151,7 @@ export function normalizeGenre(value: string): string {
 export function mapUser(raw: BackendUser): PagePalUser {
   return {
     id: raw.id,
+    email: raw.email,
     displayName: raw.name,
     username: raw.username,
     bio: raw.bio ?? "",
@@ -166,11 +169,12 @@ export function mapBook(raw: BackendBook): Book {
   const ratings = Array.isArray(raw.ratings) ? raw.ratings : [];
   const avgRating =
     ratings.length > 0
-      ? ratings.reduce((sum, item) => sum + asSafeNumber(item.rating), 0) / ratings.length
+      ? ratings.reduce((sum, item) => sum + asSafeNumber(item.rating), 0) /
+        ratings.length
       : 0;
 
   const fallbackId = asDisplayId(
-    `${raw.title}-${raw.publishedYear}-${raw.author?.name ?? "unknown"}`
+    `${raw.title}-${raw.publishedYear}-${raw.author?.name ?? "unknown"}`,
   );
 
   return {
@@ -183,8 +187,14 @@ export function mapBook(raw: BackendBook): Book {
     year: raw.publishedYear,
     isbn: raw.isbn ?? "",
     avgRating: Number(avgRating.toFixed(2)),
-    reviewCount: Array.isArray(raw.reviews) ? raw.reviews.length : ratings.length,
+    reviewCount: Array.isArray(raw.reviews)
+      ? raw.reviews.length
+      : ratings.length,
     coverTone: "primary",
+    recommendationScore:
+      typeof raw.score === "number" && Number.isFinite(raw.score)
+        ? Number(raw.score)
+        : undefined,
     tags:
       raw.tags
         ?.map((item) => item.tag?.name)
@@ -200,23 +210,35 @@ export function mapCollection(raw: BackendCollection): Collection {
     ownerId: raw.userId ?? "",
     ownerName: raw.user?.name ?? "Unknown",
     visibility: asVisibility(raw.isPublic),
-    books:
-      raw.books
-        ?.map((entry) => {
-          const id = entry.book?.id;
-          if (!id) return null;
+    books: (raw.books ?? []).flatMap((entry) => {
+      const id = entry.book?.id;
+      if (!id) {
+        return [];
+      }
 
-          return {
-            bookId: id,
-            readingStatus:
-              entry.readingStatus === "READING"
-                ? "reading"
-                : entry.readingStatus === "FINISHED"
-                ? "read"
-                : "want_to_read",
-          };
-        })
-        .filter((entry): entry is Collection["books"][number] => Boolean(entry)) ?? [],
+      const preview = entry.book
+        ? {
+            id,
+            title: entry.book.title ?? id,
+            authorId: entry.book.author?.id ?? "",
+            authorName: entry.book.author?.name ?? "Unknown",
+            genre: entry.book.genre ?? "Unknown",
+          }
+        : undefined;
+
+      return [
+        {
+          bookId: id,
+          readingStatus:
+            entry.readingStatus === "READING"
+              ? "reading"
+              : entry.readingStatus === "FINISHED"
+              ? "read"
+              : "want_to_read",
+          ...(preview ? { book: preview } : {}),
+        },
+      ];
+    }),
   };
 }
 
@@ -227,12 +249,14 @@ export function mapReview(raw: BackendReview): Review {
     userId: raw.userId,
     userName: raw.user?.name ?? "Unknown",
     createdAt: raw.createdAt,
-    rating: 0,
+    rating: undefined,
     text: raw.reviewText,
   };
 }
 
-export function mapAuthorApplication(raw: BackendAuthorApplication): AuthorApplication {
+export function mapAuthorApplication(
+  raw: BackendAuthorApplication,
+): AuthorApplication {
   return {
     id: raw.id,
     userId: raw.userId,
@@ -241,6 +265,7 @@ export function mapAuthorApplication(raw: BackendAuthorApplication): AuthorAppli
     status: raw.status.toLowerCase() as AuthorApplication["status"],
     reason: raw.reason ?? undefined,
     submittedAt: raw.createdAt,
+    reviewedAt: raw.reviewedAt ?? undefined,
   };
 }
 

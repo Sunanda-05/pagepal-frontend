@@ -5,19 +5,21 @@ import { IconLock, IconEye, IconEyeOff, IconCheck } from "@tabler/icons-react";
 import { useFormContext } from "react-hook-form";
 import FormInput from "../../../base/FormInput";
 import { FormData } from "../../../../types/form";
-import { stepThreeSchema } from "@/schemas/validation";
-import z from "zod";
 
 interface StepThreeProps {
   onBack: () => void;
-  onSubmit: () => void;
+  onSubmit: () => Promise<void> | void;
+  isSubmitting?: boolean;
 }
 
-const StepThree: React.FC<StepThreeProps> = ({ onBack, onSubmit }) => {
-  const { control, trigger, watch, handleSubmit } = useFormContext<FormData>();
+const StepThree: React.FC<StepThreeProps> = ({
+  onBack,
+  onSubmit,
+  isSubmitting = false,
+}) => {
+  const { control, watch, handleSubmit } = useFormContext<FormData>();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
@@ -31,20 +33,8 @@ const StepThree: React.FC<StepThreeProps> = ({ onBack, onSubmit }) => {
     hasNumber: /\d/.test(password || ""),
   };
 
-  const handleFormSubmit = async (data: FormData) => {
-    const isValid = await trigger(["password", "confirmPassword"]);
-    try {
-      const parsed = stepThreeSchema.safeParse({ password, confirmPassword });
-      if (parsed.success) {
-        setIsSubmitting(true);
-        // await new Promise(resolve => setTimeout(resolve, 2000));
-        // onSubmit();
-      }
-    } catch (error) {
-      console.error("Submission error:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleFormSubmit = async () => {
+    await onSubmit();
   };
 
   return (
@@ -160,9 +150,12 @@ const StepThree: React.FC<StepThreeProps> = ({ onBack, onSubmit }) => {
           color="primary"
           size="md"
           radius="sm"
-          onPress={() => handleSubmit(handleFormSubmit)}
+          onPress={() => {
+            void handleSubmit(handleFormSubmit)();
+          }}
           className="min-w-24"
           isLoading={isSubmitting}
+          isDisabled={isSubmitting}
         >
           {isSubmitting ? "Creating Account..." : "Create Account"}
         </Button>

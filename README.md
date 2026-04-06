@@ -7,9 +7,11 @@ The UI is built with a mobile-first shell and a themed design system, while data
 ## Table of Contents
 
 - [Project Overview](#project-overview)
+- [Related Backend Project](#related-backend-project)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [Feature Implementation Snapshot](#feature-implementation-snapshot)
+- [UI Gallery](#ui-gallery)
 - [Route Map](#route-map)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
@@ -26,6 +28,12 @@ PagePal Frontend is organized around role-aware reading experiences:
 - Authors can apply for author access, then create/edit/delete books.
 - Admin users can review and approve/reject author applications.
 - All users can switch visual themes that persist via cookies.
+
+## Related Backend Project
+
+This frontend is designed to work with the PagePal Postgres backend API. The backend provides auth, role-aware access, social graph endpoints, collections, reviews, and recommendation responses consumed by RTK Query in this app.
+
+Backend GitHub link: [Add backend repository URL](https://github.com/your-username/pagepal-postgres)
 
 ## Tech Stack
 
@@ -95,6 +103,40 @@ PagePal Frontend is organized around role-aware reading experiences:
 | Author workflows                 | Apply to become author, manage authored books                                             | Role-gated screens, author application endpoint, book CRUD forms for author/admin roles                   |
 | Admin moderation                 | Review pending author applications and approve/reject with reason                         | Role-gated admin desk, status filtering, reject reason schema, admin review mutation                      |
 | Appearance personalization       | Theme switching with persistence                                                          | Theme palette data + apply utility + cookie-backed Next.js API route                                      |
+
+## UI Gallery
+
+The screenshots below are grouped by flow so the visual tour stays scan-friendly while still covering all screens in images/.
+
+### Reader Home and Shelf
+
+| Home recommendations (mint) | Shelf view (coffee) | Shared collections |
+| --- | --- | --- |
+| <img src="./images/home-recommend-list-mint.png" alt="Home recommendations in mint theme" width="320" /> | <img src="./images/shelf-pc-coffee.png" alt="Shelf screen on desktop in coffee theme" width="320" /> | <img src="./images/shared-pc.png" alt="Shared collections screen on desktop" width="320" /> |
+
+### Collections and Social
+
+| Public collections (mobile) | Following (mobile coffee) | Following (desktop forest) |
+| --- | --- | --- |
+| <img src="./images/public-collection-mobile.png" alt="Public collections on mobile" width="320" /> | <img src="./images/following-mobile-coffee.png" alt="Following list on mobile in coffee theme" width="320" /> | <img src="./images/following-pc-forest.png" alt="Following list on desktop in forest theme" width="320" /> |
+
+### Settings and Account
+
+| Settings (desktop library) | Settings palette (mobile library) | Register password step (mobile mint) |
+| --- | --- | --- |
+| <img src="./images/settings-pc-library.png" alt="Settings page on desktop in library theme" width="320" /> | <img src="./images/settings-pal-mobile-library.png" alt="Settings palette view on mobile in library theme" width="320" /> | <img src="./images/register-password-mobile-mint.png" alt="Register password step on mobile in mint theme" width="320" /> |
+
+### Author and Admin Workflow
+
+| Author apply (blossom) | Pending application (dark) | Application approved |
+| --- | --- | --- |
+| <img src="./images/author-apply-pc-blossom.png" alt="Author apply screen on desktop in blossom theme" width="320" /> | <img src="./images/pending-apply-pc-dark.png" alt="Pending author application screen in dark theme" width="320" /> | <img src="./images/apply-approve.png" alt="Approved author application state" width="320" /> |
+
+### Review and Book Management
+
+| Application detail (coffee) | My books list | New book form |
+| --- | --- | --- |
+| <img src="./images/apply-detail-pc-coffee.png" alt="Author application detail screen in coffee theme" width="320" /> | <img src="./images/my-books-list.png" alt="My books management list" width="320" /> | <img src="./images/new-book-pc.png" alt="New book creation screen on desktop" width="320" /> |
 
 ## Route Map
 

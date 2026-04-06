@@ -2,11 +2,10 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BaseUser } from "@/types/user";
 import { login, logout } from "@/redux/features/userSlice";
 import type { RootState } from "@/redux/store";
+import { clearSessionCookie, setSessionCookie } from "@/utils/sessionCookie";
+import { resolveBackendBaseUrl } from "./resolveBackendUrl";
 
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-if(!backendUrl) {
-  throw new Error("NEXT_PUBLIC_BACKEND_URL is not defined");
-}
+const backendUrl = resolveBackendBaseUrl();
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -44,10 +43,11 @@ export const authApi = createApi({
               accessToken: data.accessToken,
             })
           );
+          setSessionCookie();
 
           // dispatch(authApi.util.resetApiState());
         } catch (err) {
-          console.error("Login failed", err);
+          console.log("Login failed", err);
         }
       },
     }),
@@ -61,8 +61,10 @@ export const authApi = createApi({
         try {
           await queryFulfilled;
           dispatch(logout());
+          clearSessionCookie();
         } catch (err) {
           console.error("Logout failed", err);
+          clearSessionCookie();
         }
       },
     }),

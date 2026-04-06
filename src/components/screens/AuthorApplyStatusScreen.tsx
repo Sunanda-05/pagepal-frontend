@@ -1,7 +1,8 @@
 "use client";
 
-import React, {  } from "react";
+import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   IconCircleCheck,
   IconCircleX,
@@ -10,13 +11,28 @@ import {
 import { Button } from "@heroui/button";
 import AppShell from "@/components/layout/AppShell";
 import EmptyState from "@/components/ui/EmptyState";
-import {
-  useGetAuthorApplicationQuery,
-} from "@/redux/apis/pagepalEndpoints";
+import { useRole } from "@/hooks/useRole";
+import { useGetAuthorApplicationQuery } from "@/redux/apis/pagepalEndpoints";
+import { useLogoutMutation } from "@/redux/apis/authApi";
 
 export function AuthorApplyStatusScreen() {
+  const router = useRouter();
+  const role = useRole();
   const { data } = useGetAuthorApplicationQuery();
+  const [logout, { isLoading: loggingOut }] = useLogoutMutation();
   const application = data?.[0];
+  const needsReLogin =
+    application?.status === "approved" && role !== "AUTHOR" && role !== "ADMIN";
+
+  const handleReLogin = async () => {
+    try {
+      await logout().unwrap();
+    } catch {
+      // Still continue to login so user can refresh their role claim.
+    }
+
+    router.push("/login?reason=role-refresh");
+  };
 
   if (!application) {
     return (
@@ -45,7 +61,9 @@ export function AuthorApplyStatusScreen() {
           {application.status === "pending"
             ? "We'll notify you once it's been reviewed."
             : application.status === "approved"
-            ? "Start adding your books."
+            ? needsReLogin
+              ? "Your application is approved. Please sign in again to refresh your author privileges."
+              : "Start adding your books."
             : "You can apply again after updating your motivation."}
         </p>
 
@@ -57,9 +75,21 @@ export function AuthorApplyStatusScreen() {
           </div>
         ) : null}
 
-        {application.status === "approved" ? (
+        {application.status === "approved" && !needsReLogin ? (
           <Button as={Link} href="/author/manage" className="mt-4" color="primary" radius="full">
             Go to My Books
+          </Button>
+        ) : null}
+
+        {application.status === "approved" && needsReLogin ? (
+          <Button
+            className="mt-4"
+            color="primary"
+            radius="full"
+            onPress={handleReLogin}
+            isLoading={loggingOut}
+          >
+            Log out and sign in again
           </Button>
         ) : null}
 

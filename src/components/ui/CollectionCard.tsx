@@ -18,20 +18,25 @@ function visibilityLabel(value: Collection["visibility"]): string {
 function visibilityClass(value: Collection["visibility"]): string {
   if (value === "public") return "bg-[var(--color-primary-subtle)] text-[var(--color-primary-text)]";
   if (value === "shared") return "bg-[var(--color-accent-subtle)] text-[var(--color-accent-text)]";
-  return "border border-border bg-surface text-text-muted";
+  return "border border-border bg-surface text-text-secondary";
 }
 
 export default function CollectionCard({ collection, books }: CollectionCardProps) {
-  const sourceBooks = books?.length ? books : [];
+  const sourceBooks = books?.length
+    ? books.map((book) => ({ id: book.id, title: book.title }))
+    : collection.books
+        .map((entry) => entry.book)
+        .filter((book): book is NonNullable<(typeof collection.books)[number]["book"]> => Boolean(book))
+        .map((book) => ({ id: book.id, title: book.title }));
   const visibleCovers = sourceBooks.slice(0, 4);
   const mosaicSlots = Array.from({ length: 4 }, (_slot, index) => visibleCovers[index] ?? null);
 
   return (
     <Link
       href={`/collections/${collection.id}`}
-      className="block rounded-xl border border-border bg-surface p-3 transition-all duration-200 hover:border-primary/45"
+      className="block rounded-xl border border-border bg-surface-secondary p-3 transition-all duration-200 hover:border-primary/45"
     >
-      <div className="relative overflow-hidden rounded-xl border border-border bg-surface-secondary p-1.5">
+      <div className="relative overflow-hidden rounded-xl border border-border bg-surface p-1.5">
         <div className="grid grid-cols-2 gap-1.5">
           {mosaicSlots.map((book, index) =>
             book ? (
@@ -46,7 +51,7 @@ export default function CollectionCard({ collection, books }: CollectionCardProp
             ) : (
               <div
                 key={`${collection.id}-placeholder-${index}`}
-                className="flex aspect-[4/5] items-center justify-center rounded-md border border-dashed border-border bg-primary/10"
+                className="flex aspect-[4/5] items-center justify-center rounded-md border border-dashed border-border bg-surface-secondary"
               >
                 {visibleCovers.length === 0 && index === 0 ? (
                   <div className="empty-shape scale-50" />
@@ -64,12 +69,12 @@ export default function CollectionCard({ collection, books }: CollectionCardProp
 
       <div className="mt-2 flex items-center gap-2">
         <UserAvatar name={collection.ownerName} size="xs" />
-        <span className="truncate text-xs text-text-muted">{collection.ownerName}</span>
+        <span className="truncate text-xs text-text-secondary">{collection.ownerName}</span>
       </div>
 
       <div className="mt-2 flex items-center justify-between text-xs">
         <span className="mono-meta">{collection.books.length} books</span>
-        <span className="text-text-muted">by {collection.ownerName}</span>
+        <span className="text-text-secondary">by {collection.ownerName}</span>
       </div>
     </Link>
   );

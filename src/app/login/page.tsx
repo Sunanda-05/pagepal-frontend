@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@heroui/input";
@@ -12,6 +12,7 @@ import { useLoginMutation } from "@/redux/apis/authApi";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [login, { isLoading }] = useLoginMutation();
   const [serverError, setServerError] = useState<string | null>(null);
@@ -29,7 +30,10 @@ export default function LoginPage() {
     setServerError(null);
     try {
       await login(values).unwrap();
-      router.push("/");
+
+      const requestedNext = searchParams.get("next");
+      const safeNext = requestedNext?.startsWith("/") ? requestedNext : null;
+      router.push(safeNext ?? "/home");
     } catch {
       setServerError("Unable to sign in with those credentials.");
     }

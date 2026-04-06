@@ -1,22 +1,32 @@
 "use client";
 
-import React, {  } from "react";
+import React from "react";
 import AppShell from "@/components/layout/AppShell";
 import BookCard from "@/components/ui/BookCard";
 import BookCover from "@/components/ui/BookCover";
 import EmptyState from "@/components/ui/EmptyState";
 import LoadMoreButton from "@/components/ui/LoadMoreButton";
 import { BookCardSkeleton } from "@/components/ui/Skeletons";
-import {
-  useGetRecommendationsQuery,
-} from "@/redux/apis/pagepalEndpoints";
-
-
+import { useGetRecommendationsQuery } from "@/redux/apis/pagepalEndpoints";
 
 export function RecommendationsScreen() {
   const { data, isLoading } = useGetRecommendationsQuery();
   const books = data?.items ?? [];
   const reasonBooks = books.slice(0, 6);
+  const maxScore = books.reduce((max, book) => {
+    if (typeof book.recommendationScore !== "number") {
+      return max;
+    }
+    return Math.max(max, book.recommendationScore);
+  }, 0);
+
+  const toMatchStrength = (score?: number): number | undefined => {
+    if (typeof score !== "number" || maxScore <= 0) {
+      return undefined;
+    }
+
+    return Math.max(1, Math.min(100, Math.round((score / maxScore) * 100)));
+  };
 
   return (
     <AppShell zone="B" pageTitle="Recommendations">
@@ -30,7 +40,9 @@ export function RecommendationsScreen() {
           {reasonBooks.map((book) => (
             <div key={`reason-${book.id}`} className="flex items-center gap-2 rounded-full border border-border bg-surface px-2 py-1">
               <BookCover title={book.title} seed={book.id} size="xs" hideTitle />
-              <span className="max-w-[180px] truncate text-xs text-text-muted">because you liked {book.title}</span>
+              <span className="max-w-[180px] truncate text-xs text-text-muted">
+                score {typeof book.recommendationScore === "number" ? book.recommendationScore.toFixed(2) : "0.00"}
+              </span>
             </div>
           ))}
         </div>
@@ -47,8 +59,8 @@ export function RecommendationsScreen() {
         ) : (
           <>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {books.map((book, index) => {
-                const strength = Math.max(52, Math.min(98, Math.round(book.avgRating * 18 + (index % 4) * 6)));
+              {books.map((book) => {
+                const strength = toMatchStrength(book.recommendationScore);
                 return <BookCard key={book.id} book={book} size="compact" matchStrength={strength} />;
               })}
             </div>

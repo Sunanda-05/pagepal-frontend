@@ -15,6 +15,7 @@ export type ActivityAction =
 
 export interface PagePalUser {
   id: string;
+  email: string;
   displayName: string;
   username: string;
   bio: string;
@@ -42,6 +43,7 @@ export interface Book {
   reviewCount: number;
   coverTone: string;
   tags: string[];
+  recommendationScore?: number;
 }
 
 export interface Review {
@@ -50,7 +52,7 @@ export interface Review {
   userId: string;
   userName: string;
   createdAt: string;
-  rating: number;
+  rating?: number;
   text: string;
   featured?: boolean;
 }
@@ -71,6 +73,13 @@ export interface ActivityItem {
 export interface CollectionBook {
   bookId: string;
   readingStatus: ReadingStatus;
+  book?: {
+    id: string;
+    title: string;
+    authorId: string;
+    authorName: string;
+    genre: string;
+  };
 }
 
 export interface Collection {
@@ -91,6 +100,7 @@ export interface AuthorApplication {
   status: "pending" | "approved" | "rejected";
   reason?: string;
   submittedAt: string;
+  reviewedAt?: string;
 }
 
 export interface PaletteOption {

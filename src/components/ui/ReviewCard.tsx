@@ -30,7 +30,7 @@ export default function ReviewCard({
         <div className="mt-3 flex items-center gap-2 text-xs text-text-muted">
           <UserAvatar name={review.userName} size="xs" />
           <span>{review.userName}</span>
-          <StarRating value={review.rating} size="sm" />
+          {typeof review.rating === "number" ? <StarRating value={review.rating} size="sm" /> : null}
           <span className="mono-meta">{new Date(review.createdAt).toLocaleDateString()}</span>
         </div>
       </article>
@@ -53,7 +53,7 @@ export default function ReviewCard({
       </header>
 
       <div className="mt-2 flex items-center justify-between gap-3">
-        <StarRating value={review.rating} size="sm" />
+        {typeof review.rating === "number" ? <StarRating value={review.rating} size="sm" /> : null}
         <div className="flex items-center gap-3 text-xs text-text-muted">
           <button type="button">Like</button>
           <button type="button">Reply</button>

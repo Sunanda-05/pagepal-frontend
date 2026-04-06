@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@heroui/button";
-import { IconUser, IconCheck, IconX } from "@tabler/icons-react";
+import { IconUser, IconCheck } from "@tabler/icons-react";
 import { useFormContext } from "react-hook-form";
 import FormInput from "../../../base/FormInput";
 import { FormData } from "../../../../types/form";
@@ -12,17 +12,13 @@ interface StepTwoProps {
 }
 
 const StepTwo: React.FC<StepTwoProps> = ({ onNext, onBack }) => {
-  const { control, trigger, watch } = useFormContext<FormData>();
-  const [isChecking, setIsChecking] = useState(false);
+  const {
+    control,
+    trigger,
+    watch,
+    formState: { errors },
+  } = useFormContext<FormData>();
   const username = watch("username");
-
-  // Mock username availability check
-  const checkUsernameAvailability = async (username: string) => {
-    setIsChecking(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsChecking(false);
-    return !["admin", "user", "test"].includes(username.toLowerCase());
-  };
 
   const handleNext = async () => {
     const isValid = await trigger(["username"]);
@@ -32,28 +28,11 @@ const StepTwo: React.FC<StepTwoProps> = ({ onNext, onBack }) => {
   };
 
   const getEndContent = () => {
-    if (isChecking) {
-      return (
-        <div className="w-4 h-4 border-2 border-info border-t-transparent rounded-full animate-spin" />
-      );
-    }
-    if (username && username.length >= 3) {
+    if (username && username.length >= 3 && !errors.username) {
       return <IconCheck size={18} className="text-success" />;
     }
     return null;
   };
-
-  useEffect(() => {
-    if (!username) return;
-
-    const timer = setTimeout(() => {
-      trigger("username").finally(() => {
-        checkUsernameAvailability(username);
-      });
-    }, 1000); // Debounce for 500ms
-
-    return () => clearTimeout(timer);
-  }, [username, trigger]);
 
   return (
     <div

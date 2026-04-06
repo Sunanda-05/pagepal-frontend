@@ -18,19 +18,38 @@ import { useRegisterMutation } from "@/redux/apis/authApi";
 const MultiStepSignupForm: React.FC = () => {
   const { currentStep, direction, nextStep, prevStep, goToStep, form } =
     useMultiStepForm();
-    const [register, { isSuccess }] = useRegisterMutation()
-  const [isCompleted, setIsCompleted] = useState(true);
+  const [register, { isLoading: isRegistering }] = useRegisterMutation();
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const isMobile = useIsMobile();
 
   const handleComplete = async () => {
-    await register(form.getValues());
-    if(isSuccess)
-    setIsCompleted(true);
+    setSubmitError(null);
+
+    const values = form.getValues();
+    const name = `${values.firstName} ${values.lastName}`.trim();
+
+    try {
+      await register({
+        email: values.email.trim(),
+        username: values.username.trim(),
+        password: values.password,
+        name: name || undefined,
+      }).unwrap();
+
+      setIsCompleted(true);
+    } catch (error) {
+      const maybeError = error as { data?: { error?: string } };
+      setSubmitError(
+        maybeError?.data?.error ?? "Unable to create your account right now."
+      );
+    }
   };
 
   const handleReset = () => {
     setIsCompleted(false);
+    setSubmitError(null);
     form.reset();
     goToStep(1);
   };
@@ -46,7 +65,13 @@ const MultiStepSignupForm: React.FC = () => {
       case 2:
         return <StepTwo onNext={nextStep} onBack={prevStep} />;
       case 3:
-        return <StepThree onBack={prevStep} onSubmit={handleComplete} />;
+        return (
+          <StepThree
+            onBack={prevStep}
+            onSubmit={handleComplete}
+            isSubmitting={isRegistering}
+          />
+        );
       default:
         return null;
     }
@@ -95,6 +120,9 @@ const MultiStepSignupForm: React.FC = () => {
                   className=" flex flex-col items-center"
                 >
                   {renderStep()}
+                  {submitError && !isCompleted ? (
+                    <p className="mt-4 text-center text-sm text-danger">{submitError}</p>
+                  ) : null}
                   {!isCompleted && (
                     <div className="flex justify-center mt-8">
                       <div className="flex space-x-2">

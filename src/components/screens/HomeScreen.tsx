@@ -21,7 +21,7 @@ import {
   useGetRecommendationsQuery,
 } from "@/redux/apis/pagepalEndpoints";
 import { Book } from "@/types/pagepal";
-import { isShelfCollectionName, relativeDateLabel } from "@/utils/bookUtil";
+import { isShelfCollectionName } from "@/utils/bookUtil";
 
 export function HomeScreen() {
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -37,40 +37,33 @@ export function HomeScreen() {
   const shelfCollection = (myCollectionsData?.items ?? []).find((collection) => isShelfCollectionName(collection.name));
   const recommendationLookup = new Map(recommendationBooks.map((book) => [book.id, book]));
 
-  const shelfBooks: Book[] = (shelfCollection?.books ?? []).map((entry) => {
+  const shelfBooks: Book[] = (shelfCollection?.books ?? []).flatMap((entry) => {
     const matchedBook = recommendationLookup.get(entry.bookId);
 
     if (matchedBook) {
-      return matchedBook;
+      return [matchedBook];
     }
 
-    return {
-      id: entry.bookId,
-      title: `Book ${entry.bookId.slice(0, 8)}`,
-      authorId: "",
-      authorName: "Unknown author",
-      description: "",
-      genre: "Unknown",
-      year: new Date().getFullYear(),
-      isbn: "",
-      avgRating: 0,
-      reviewCount: 0,
-      coverTone: "primary",
-      tags: [],
-    };
-  });
+    if (!entry.book) {
+      return [];
+    }
 
-  const activityItems = recommendationBooks.slice(0, 10).map((book, index) => {
-    const actionType = index % 3 === 0 ? "reviewed" : index % 3 === 1 ? "rated" : "added";
-    const occurredAt = new Date(Date.now() - (index + 1) * 60 * 60 * 1000).toISOString();
-    const actor = ["Priya", "Dev", "Ananya", "Karan", "Ishita"][index % 5];
-    return {
-      id: `${book.id}-${index}`,
-      actionType,
-      actor,
-      occurredAt,
-      book,
-    };
+    return [
+      {
+        id: entry.book.id,
+        title: entry.book.title,
+        authorId: entry.book.authorId,
+        authorName: entry.book.authorName,
+        description: "",
+        genre: entry.book.genre,
+        year: new Date().getFullYear(),
+        isbn: "",
+        avgRating: 0,
+        reviewCount: 0,
+        coverTone: "primary",
+        tags: [],
+      },
+    ];
   });
 
   const ensureShelfCollection = async () => {
@@ -141,46 +134,30 @@ export function HomeScreen() {
         <div className="h-px w-full bg-border" />
 
         <section className="space-y-1">
-          <p className="section-kicker">Friends&apos; activity</p>
-          {activityItems.length === 0 ? (
+          <p className="section-kicker">Recommended for you</p>
+          {recommendationBooks.length === 0 ? (
             <div className="py-4">
-              <EmptyState title="Follow someone to see their activity." subtitle="Your feed will appear here once friends start reading." />
+              <EmptyState title="No recommendations available yet." subtitle="Rate and review books to improve recommendations." />
             </div>
           ) : (
-            activityItems.map((item) => (
-              <article key={item.id} className="border-b border-divider py-4">
+            recommendationBooks.slice(0, 10).map((book) => (
+              <article key={book.id} className="border-b border-divider py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-start gap-3">
-                    <Link href="/profile/me" className="active:scale-95">
-                      <UserAvatar name={item.actor} size="sm" />
-                    </Link>
+                    <BookCover title={book.title} seed={book.id} size="xs" hideTitle />
                     <div className="min-w-0">
-                      <p className="text-[13px] text-text">
-                        <span className="font-semibold">{item.actor}</span>{" "}
-                        <span className="text-text-muted">
-                          {item.actionType === "reviewed" ? "reviewed" : item.actionType === "rated" ? "rated" : "added to shelf"}
-                        </span>
-                      </p>
-                      <Link href={`/books/${item.book.id}`} className="mt-2 flex min-w-0 items-start gap-2">
-                        <BookCover title={item.book.title} seed={item.book.id} size="xs" hideTitle />
-                        <div className="min-w-0">
-                          <p className="truncate serif-display text-[14px] text-text">{item.book.title}</p>
-                          <p className="truncate text-xs text-text-muted">{item.book.authorName}</p>
-                          {item.actionType !== "added" ? (
-                            <div className="mt-1">
-                              <StarRating value={item.book.avgRating} size="sm" count={item.book.reviewCount} />
-                            </div>
-                          ) : (
-                            <div className="mt-1">
-                              <TagChip label={item.book.genre} zoneStyle="pill" />
-                            </div>
-                          )}
-                        </div>
+                      <Link href={`/books/${book.id}`} className="block">
+                        <p className="truncate serif-display text-[14px] text-text">{book.title}</p>
+                        <p className="truncate text-xs text-text-muted">{book.authorName}</p>
                       </Link>
+
+                      <div className="mt-1">
+                        <StarRating value={book.avgRating} size="sm" count={book.reviewCount} />
+                      </div>
                     </div>
                   </div>
 
-                  <span className="mono-meta">{relativeDateLabel(item.occurredAt)}</span>
+                  <TagChip label={book.genre} zoneStyle="pill" />
                 </div>
               </article>
             ))

@@ -2,7 +2,7 @@
 
 PagePal Frontend is a Next.js 15 application for a social reading platform. It supports book discovery, reviews, collections, social follow relationships, author workflows, and admin moderation.
 
-The UI is built with a mobile-first shell and a themed design system, while data/state flows through Redux Toolkit and RTK Query.
+The UI is built with a mobile-first shell and a Multi-themed design system, while data/state flows through Redux Toolkit and RTK Query.
 
 ## Table of Contents
 
@@ -33,7 +33,8 @@ PagePal Frontend is organized around role-aware reading experiences:
 
 This frontend is designed to work with the PagePal Postgres backend API. The backend provides auth, role-aware access, social graph endpoints, collections, reviews, and recommendation responses consumed by RTK Query in this app.
 
-Backend GitHub link: [Add backend repository URL](https://github.com/your-username/pagepal-postgres)
+Backend GitHub link: [Backend repository URL](https://github.com/Sunanda-05/pagepal-postgres)
+<img src="./images/backend.png" alt="Swagger API overview and auth endpoints" width="520" />
 
 ## Tech Stack
 
